@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
+  test-and-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,3 +27,14 @@ jobs:
       run: |
         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/cicd-demo:latest .
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/cicd-demo:latest
+
+  deploy-to-k8s:
+    runs-on: self-hosted        # ← 這個 job 在你的 WSL2 跑
+    needs: test-and-build       # ← 等上面的 job 成功才執行
+
+    steps:
+    - name: Deploy to K3s
+      run: |
+        sudo kubectl set image deployment/cicd-demo \
+          cicd-demo=${{ secrets.DOCKERHUB_USERNAME }}/cicd-demo:latest
+        sudo kubectl rollout status deployment/cicd-demo
