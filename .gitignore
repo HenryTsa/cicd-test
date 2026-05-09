@@ -1,0 +1,13 @@
+# Token 和敏感資料
+git_token.txt
+.env
+*.key
+*.pem
+
+# Python 產生的檔案
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Docker
+.dockerignore
